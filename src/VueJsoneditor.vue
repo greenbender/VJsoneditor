@@ -34,7 +34,8 @@ export default {
     plus: {
       type: Boolean,
       default: true
-    }
+    },
+    schemaUrl: String
   },
   methods: {
     onChange() {
@@ -67,6 +68,11 @@ export default {
           },
           this.options)
         this.editor = new JSONEditor(container, options)
+        if (this.schemaUrl) {
+          fetch(this.schemaUrl)
+            .then(response => response.json())
+            .then(json => { this.editor.setSchema(json) })
+        }
       }
       this.editor.set(this.value || {})
     },

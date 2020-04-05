@@ -1,7 +1,7 @@
 <template lang="html">
-    <div class="jsoneditor-container" :class="{'max-box':max,'min-box':!max}" :style="getHeight">
+    <div class="jsoneditor-container" :class="{'max-box':max,'min-box':!max}" :style="_height">
         <div ref="jsoneditor" class="jsoneditor-box"></div>
-        <button type="button" @click="max = !max" class="max-btn" size="mini" v-if="options.mode == 'code' && plus"></button>
+        <button type="button" @click="max = !max" class="max-btn" size="mini" v-if="_options.mode == 'code' && plus"></button>
     </div>
 </template>
 
@@ -21,12 +21,26 @@ export default {
   props: {
     options: {
       type: Object,
-      default: () => {
-        return {
-          mode: "code"
-        }
+      default() {
+        return {}
       }
     },
+    mode: {
+      type: String,
+      default: "code"
+    },
+    indentation: {
+      type: Number,
+      default: 2
+    },
+    history: Boolean,
+    search: Boolean,
+    mainMenuBar: Boolean,
+    navigationBar: Boolean,
+    statusBar: Boolean,
+    colorPicker: Boolean,
+    enableSort: Boolean,
+    enableTransform: Boolean,
     value: [Object, Array, Number, String, Boolean],
     height: {
       type: String
@@ -36,6 +50,31 @@ export default {
       default: true
     },
     schemaUrl: String
+  },
+  computed: {
+    _options() {
+      return Object.assign({
+        onChange: this.onChange,
+        mode: this.mode,
+        history: this.history,
+        search: this.search,
+        indentation: this.indentation,
+        mainMenuBar: this.mainMenuBar,
+        navigationBar: this.navigationBar,
+        statusBar: this.statusBar,
+        colorPicker: this.colorPicker,
+        enableSort: this.enableSort,
+        enableTransform: this.enableTransform
+      }, this.options)
+    },
+    _height() {
+      if (this.height && !this.max) {
+        return {
+          height: this.height
+        }
+      }
+      return {}
+    }
   },
   methods: {
     onChange() {
@@ -61,13 +100,7 @@ export default {
     initView() {
       if (!this.editor) {
         var container = this.$refs.jsoneditor
-        const options = Object.assign({
-            onChange: this.onChange,
-            navigationBar: false,
-            statusBar: false
-          },
-          this.options)
-        this.editor = new JSONEditor(container, options)
+        this.editor = new JSONEditor(container, this._options)
         if (this.schemaUrl) {
           fetch(this.schemaUrl)
             .then(response => response.json())
@@ -103,16 +136,6 @@ export default {
   },
   beforeDestroy() {
     this.destroyView()
-  },
-  computed: {
-    getHeight() {
-      if (this.height && !this.max) {
-        return {
-          height: this.height
-        }
-      }
-      return {}
-    }
   }
 }
 </script>

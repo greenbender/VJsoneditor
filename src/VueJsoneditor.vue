@@ -33,6 +33,10 @@ export default {
       type: Number,
       default: 2
     },
+    name: {
+        type: String,
+        default: "object"
+    },
     history: Boolean,
     search: Boolean,
     mainMenuBar: Boolean,
@@ -56,9 +60,10 @@ export default {
       return Object.assign({
         onChange: this.onChange,
         mode: this.mode,
+        indentation: this.indentation,
+        name: this.name,
         history: this.history,
         search: this.search,
-        indentation: this.indentation,
         mainMenuBar: this.mainMenuBar,
         navigationBar: this.navigationBar,
         statusBar: this.statusBar,
